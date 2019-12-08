@@ -1,0 +1,76 @@
+@model CascaddingDropdown.Models.Dropdown
+
+@{
+    ViewBag.Title = "Drop";
+}
+
+<h2>Drop</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Dropdown</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.DepartmentId, "Department", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("DepartmentId", ViewBag.Department as SelectList, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.DepartmentId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StudentId, "StudentId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("StudentId", new SelectList(string.Empty, "Value", "Text"), "----Select---" ,htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StudentId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+        $(document).ready(function () {
+
+
+            $("#DepartmentId").change(function () {
+
+                var deptId = $("#DepartmentId").val();
+                //$("#StudentId").empty();
+                //$("#StudentId").append('<option value="">Select...</option>');
+                var json = { departmnetId: deptId };
+                $.ajax({
+                    type: "POST",
+                    @*url: '@Url.Action("GetStudentByDepartmentId", "Home")',*@
+                    url: '/Home/GetStudentsByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                       $.each(data, function (key, value) {
+                           alert(data);
+                           //$("#StudentId").append('<option value=' + value.StudentId + '>' + value.Name + '</option>');
+                       });
+
+                    }
+                });
+            });
+        });
+</script>
+}
